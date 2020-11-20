@@ -84,6 +84,9 @@ def crawl_url(q, browser, cj):
         if r_head.status_code != 200:
             print(f": error code {r_head.status_code} on: {base_url + next_url}")
 
+        # Slow down a little
+        time.sleep(5)
+
         if r_head.headers.get("Content-Type") == "application/pdf":
             if download_pdf:
                 # pdf_name = r_head.headers["Content-Description"].replace(" ", "_").translate( {ord(i): None for i in '/,"{}()[]'})
