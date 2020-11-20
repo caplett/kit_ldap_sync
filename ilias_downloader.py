@@ -31,13 +31,19 @@ password = cfg["credentials"]["password"]
 
 download_pdf = cfg["credentials"].get("pdf")
 
+user_agent_platform = cfg["credentials"]["user_agent"].get("platform")
+user_agent_email = cfg["credentials"]["user_agent"].get("email")
+
 seen_urls = []
 
 
-def create_browser(options, url, uname, password):
+def create_browser(profile, options, url, uname, password):
     print("Setup Browser")
+
     browser = webdriver.Firefox(
-        options=options, service_log_path="/tmp/geckodriver.log"
+        firefox_profile=profile,
+        options=options,
+        service_log_path="/tmp/geckodriver.log"
     )
     browser.get(url)
 
@@ -221,13 +227,29 @@ def crawl_worker_loop(q, browser, cj):
         crawl_url(q, browser, cj)
         q.task_done()
 
+def create_user_agent(platform, email):
+    o = Options()
+    o.headless = True
+    b = webdriver.Firefox(
+        options=o,
+        service_log_path="/tmp/geckodriver_setup.log"
+    )
+    browserversion = b.capabilities['browserVersion']
+    driverversion = b.capabilities['moz:geckodriverVersion']
+    b.quit()
+
+    return f"Mozilla/5.0 ({platform}; rv:{browserversion}) Gecko/20100101 Firefox/{browserversion} geckodriver/{driverversion} Contact {email}"
 
 options = Options()
 options.headless = True
 
+profile = webdriver.FirefoxProfile()
+user_agent = create_user_agent(user_agent_platform, user_agent_email)
+profile.set_preference("general.useragent.override", user_agent)
+
 num_threads = cfg["credentials"]["num_threads"]
 browsers = [
-    create_browser(options, login_url, uname, password) for _ in range(num_threads)
+    create_browser(profile, options, login_url, uname, password) for _ in range(num_threads)
 ]
 
 browser_cookies = browsers[0].get_cookies()
