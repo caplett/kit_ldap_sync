@@ -11,7 +11,21 @@ credentials:
 
     # The place where files get safed
     base_path : "ilias"
-    
+
+    # Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent/Firefox
+    # Platform: Example for Ubuntu 64 bit. Check the firefox developer tools -> Network -> Request Headers
+    # Please fill email with an address you use! It will be send with every request and
+    # lets the website owner contact you if something goes horribly wrong.
+    user_agent:
+        platform: "X11; Ubuntu; Linux x86_64"
+        email: "example@email"
+
+    # Folder names which should be ignored
+    # NOTE: Do not look at the folder name in ilias! Instead look at the one on your hard drive!
+    blacklisted_folders :
+        - "Folder_1"
+        - "Folder_2"
+
     # Dont get to crazy here
     num_threads : 4
 
